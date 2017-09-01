@@ -12,39 +12,23 @@ sess = tf.Session()
 x = tf.placeholder("float", [None, 784]) # mnist data image of shape 28*28=784
 y = tf.placeholder("float", [None, 10]) # 0-9 digits recognition => 10 classes
 
-	
-saver = tf.train.import_meta_graph('frozen_mlp_checkpoint/model-checkpoint-547800.meta')
-saver.restore(sess, 'frozen_mlp_checkpoint/model-checkpoint-547800')
-
-var_list_opt = [None, None, None, None, None, None]
-name_2_index = {
-	"mlp_model/hidden_1/W:0" : 0,
-	"mlp_model/hidden_1/b:0" : 1,
-	"mlp_model/hidden_2/W:0" : 2,
-	"mlp_model/hidden_2/b:0" : 3,
-	"mlp_model/output/W:0" : 4,
-	"mlp_model/output/b:0" : 5
-}
-
-for xx in tf.trainable_variables():
-	if xx.name in name_2_index:
-		index = name_2_index[xx.name]
-		var_list_opt[index] = xx
-
-
+with tf.variable_scope("mlp_model") as scope:
+	output_opt = inference(x)
+	cost_opt = loss(output_opt, y)
+	scope.reuse_variables()
+	var_list_opt = ["hidden_1/W", "hidden_1/b", "hidden_2/W", "hidden_2/b", "output/W", "output/b"]
+	var_list_opt = [tf.get_variable(v) for v in var_list_opt]
+	saver = tf.train.Saver()
+	saver.restore(sess, 'frozen_mlp_checkpoint/model-checkpoint-547800')
+	#print [sess.run(v) for v in var_list_opt]
 
 with tf.variable_scope("mlp_init") as scope:
-
 	output_rand = inference(x)
 	cost_rand = loss(output_rand, y)
-
 	scope.reuse_variables()
-
 	var_list_rand = ["hidden_1/W", "hidden_1/b", "hidden_2/W", "hidden_2/b", "output/W", "output/b"]
 	var_list_rand = [tf.get_variable(v) for v in var_list_rand]
-
 	init_op = tf.variables_initializer(var_list_rand)
-
 	sess.run(init_op)
 
 
@@ -74,8 +58,7 @@ with tf.variable_scope("mlp_inter") as scope:
 	tf.summary.scalar("interpolated_cost", cost_inter)
 
 
-summary_writer = tf.summary.FileWriter("linear_interp_logs/",
-                                        graph_def=sess.graph_def)
+summary_writer = tf.summary.FileWriter("linear_interp_logs/", graph=sess.graph)
 summary_op = tf.summary.merge_all()
 results = []
 for a in np.arange(-2, 2, 0.01):
