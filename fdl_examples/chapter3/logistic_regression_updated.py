@@ -80,8 +80,7 @@ if __name__ == '__main__':
 
         sess = tf.Session()
 
-        summary_writer = tf.summary.FileWriter("logistic_logs/",
-                                            graph_def=sess.graph_def)
+        summary_writer = tf.summary.FileWriter("logistic_logs/", graph=sess.graph)
 
         
         init_op = tf.global_variables_initializer()

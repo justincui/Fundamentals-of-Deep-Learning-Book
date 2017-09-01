@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 sess = tf.Session()
 
-x = tf.placeholder("float", [None, 784]) # mnist data image of shape 28*28=784
-y = tf.placeholder("float", [None, 10]) # 0-9 digits recognition => 10 classes
+x = tf.placeholder("float", [None, 784], name='x') # mnist data image of shape 28*28=784
+y = tf.placeholder("float", [None, 10], name='y') # 0-9 digits recognition => 10 classes
 
 with tf.variable_scope("mlp_model") as scope:
 	output_opt = inference(x)
