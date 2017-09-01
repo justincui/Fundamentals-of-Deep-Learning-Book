@@ -26,10 +26,10 @@ name_2_index = {
 	"mlp_model/output/b:0" : 5
 }
 
-for x in tf.trainable_variables():
-	if x.name in name_2_index:
-		index = name_2_index[x.name]
-		var_list_opt[index] = x
+for xx in tf.trainable_variables():
+	if xx.name in name_2_index:
+		index = name_2_index[xx.name]
+		var_list_opt[index] = xx
 
 
 
